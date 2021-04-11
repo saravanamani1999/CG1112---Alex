@@ -270,6 +270,12 @@ void sendCommand(char command)
 			commandPacket.command = COMMAND_GET_COLOUR;
 			sendPacket(&commandPacket);
 			break;
+		
+		case 't':
+		case 'T':
+			commandPacket.command = COMMAND_GET_TONE;
+			sendPacket(&commandPacket);
+			break;
 
 
 		case 'q':
