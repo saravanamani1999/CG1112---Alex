@@ -555,12 +555,12 @@ ISR(INT1_vect)
 void setupSerial()
 {
   // To replace later with bare-metal.
-  //Serial.begin(9600);
-   UBRR0L = 103;
-   UBRR0H = 0;
+  Serial.begin(9600);
+//    UBRR0L = 103;
+//    UBRR0H = 0;
 
-   UCSR0C = 0b00100100;
-   UCSR0A = 0;
+//    UCSR0C = 0b00100100;
+//    UCSR0A = 0;
 }
 
 // Start the serial connection. For now we are using
@@ -571,8 +571,8 @@ void startSerial()
 {
   // Empty for now. To be replaced with bare-metal code
   // later on.
- UCSR0B = 0b00011000;
- initBuffer(buf,1000);
+//  UCSR0B = 0b00011000;
+//  initBuffer(buf,1000);
   
 }
 
@@ -585,11 +585,11 @@ int readSerial(unsigned char *buffer)
 
   int count=0;
 
-//   while(Serial.available())
-//     buffer[count++] = Serial.read();
- while(dataAvailable(buf)){
-   readBuffer(buf,buffer + count++);
- }
+  while(Serial.available())
+    buffer[count++] = Serial.read();
+//  while(dataAvailable(buf)){
+//    readBuffer(buf,buffer + count++);
+//  }
 
   return count;
 }
@@ -601,9 +601,9 @@ void writeSerial(unsigned const char *buffer, int len)
 {
   Serial.write(buffer, len);
 
- for (int i = 0; i < len;i++){
-   writeBuffer(buf,buffer + i);
- }
+//  for (int i = 0; i < len;i++){
+//    writeBuffer(buf,buffer + i);
+//  }
 }
 
 /*
