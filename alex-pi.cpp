@@ -59,17 +59,6 @@ void handleResponse(TPacket *packet)
 		case RESP_STATUS:
 			handleStatus(packet);
 		break;
-		/*
-		case RESP_COLOUR:
-			if(packet->params[0] == 1){
-				
-				printf("red\n");
-			}
-			else{
-				printf("green\n");
-			}
-		break;
-		*/
 
 		default:
 			printf("Arduino is confused\n");
