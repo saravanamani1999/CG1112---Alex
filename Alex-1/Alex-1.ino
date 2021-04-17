@@ -326,7 +326,7 @@ void sendColour()
   colourPacket.packetType = PACKET_TYPE_RESPONSE;
   colourPacket.command = RESP_COLOUR;
   colourPacket.params[0] = colourSensing();  
- // colourPacket.data[0] = "red";
+
   if(colourSensing()){
     sendMessage("red");
   }
@@ -334,9 +334,6 @@ void sendColour()
   else{
     sendMessage("green");
   }
-//  if (colourSensing() == 0) {
-//    sendMessage("red");
-//  }
   
 }
 
@@ -431,14 +428,6 @@ bool colourSensing() {
   
   for(i = 0;i < 40; i++) {
 
-    
-    //digitalWrite(VCC, HIGH);
-//    digitalWrite(S2, LOW);
-//    digitalWrite(S3, LOW);
-
-    //DDR
-//    PORTC &= ~_BV(2);
-//    PORTC &= ~_BV(3);
 
     PORTC &= 0b11110011;
     
@@ -446,10 +435,7 @@ bool colourSensing() {
 
     red = pulseIn(sensorOut, LOW);
     
-//    digitalWrite(S2, HIGH);
-//    digitalWrite(S3, HIGH);
-//    PORTC |= _BV (2);
-//    PORTC |= _BV (3);
+
     PORTC |= 0b00001100;
     delay(10);
 
@@ -569,12 +555,12 @@ ISR(INT1_vect)
 void setupSerial()
 {
   // To replace later with bare-metal.
-  Serial.begin(9600);
-//  UBRR0L = 103;
-//  UBRR0H = 0;
-//
-//  UCSR0C = 0b00100100;
-//  UCSR0A = 0;
+  //Serial.begin(9600);
+   UBRR0L = 103;
+   UBRR0H = 0;
+
+   UCSR0C = 0b00100100;
+   UCSR0A = 0;
 }
 
 // Start the serial connection. For now we are using
@@ -585,8 +571,8 @@ void startSerial()
 {
   // Empty for now. To be replaced with bare-metal code
   // later on.
-//  UCSR0B = 0b00011000;
-//  initBuffer(buf,1000);
+ UCSR0B = 0b00011000;
+ initBuffer(buf,1000);
   
 }
 
@@ -599,11 +585,11 @@ int readSerial(unsigned char *buffer)
 
   int count=0;
 
-  while(Serial.available())
-    buffer[count++] = Serial.read();
-//  while(dataAvailable(buf)){
-//    readBuffer(buf,buffer + count++);
-//  }
+//   while(Serial.available())
+//     buffer[count++] = Serial.read();
+ while(dataAvailable(buf)){
+   readBuffer(buf,buffer + count++);
+ }
 
   return count;
 }
@@ -615,9 +601,9 @@ void writeSerial(unsigned const char *buffer, int len)
 {
   Serial.write(buffer, len);
 
-//  for (int i = 0; i < len;i++){
-//    writeBuffer(buf,buffer + i);
-//  }
+ for (int i = 0; i < len;i++){
+   writeBuffer(buf,buffer + i);
+ }
 }
 
 /*
@@ -720,14 +706,14 @@ void forward(float dist, float speed)
   else
     deltaDist = 9999999;
   newDist = forwardDist + deltaDist;
-//
+
 
   
   dir = FORWARD;
   //int val = pwmVal(speed);
   int power_l = pwmVal(speed);
   int power_r = pwmVal(speed);
-//
+
 
 
   leftForwardTicks = 0;
@@ -735,33 +721,26 @@ void forward(float dist, float speed)
 
   unsigned long leftForwardTicks_prev = leftForwardTicks;
   unsigned long rightForwardTicks_prev = rightForwardTicks;
-//
+
   leftRevs = (dist)/WHEEL_CIRC;
   rightRevs = (dist)/WHEEL_CIRC;
   unsigned long targetCount_l = leftRevs*COUNTS_PER_REV;
   unsigned long targetCount_r = rightRevs*COUNTS_PER_REV;
-//
+
   while ((leftForwardTicks < targetCount_l) && (rightForwardTicks < targetCount_r)){
-//
+
     ticks_l = leftForwardTicks;
     ticks_r = rightForwardTicks;
-//    
-//    analogWrite(LF, val);
-//    analogWrite(RF, val);
-//    analogWrite(LR,0);
-//    analogWrite(RR, 0);
-    
+
     
     OCR0A = power_l;
     OCR0B = 0;
     OCR2A = 0;
     OCR1B = power_r; 
 
-
-//
     diff_l = ticks_l - leftForwardTicks_prev;
     diff_r = ticks_r - rightForwardTicks_prev;
-//
+
     leftForwardTicks_prev = ticks_l;
     rightForwardTicks_prev = ticks_r;
 
@@ -775,7 +754,7 @@ void forward(float dist, float speed)
       power_r -= offset;
     }
   }
-//   
+  
 
 }
   
@@ -789,14 +768,10 @@ void forward(float dist, float speed)
 void reverse(float dist, float speed)
 {
   clearCounters();
-//
-//  OCR0A = 0;
-//  OCR0B = val;
-//  OCR2A = val;
-//  OCR1B = 0;
+
   
   dir = BACKWARD;
-  //int val = pwmVal(speed);
+ 
   int power_l = pwmVal(speed);
   int power_r = pwmVal(speed);
 
@@ -812,27 +787,27 @@ void reverse(float dist, float speed)
 
   unsigned long leftReverseTicks_prev = leftReverseTicks;
   unsigned long rightReverseTicks_prev = rightReverseTicks;
-//
+
   leftRevs = (dist)/(WHEEL_CIRC);
   rightRevs = (dist)/(WHEEL_CIRC);
   unsigned long targetCount_l = leftRevs*COUNTS_PER_REV;
   unsigned long targetCount_r = rightRevs*COUNTS_PER_REV;
-//
+
   while ((leftReverseTicks < targetCount_l) && (rightReverseTicks < targetCount_r)){
-//
+
     ticks_l = leftReverseTicks;
     ticks_r = rightReverseTicks;
     
-    OCR0A = 0;//power_l;
+    OCR0A = 0;
     OCR0B = power_l;
     OCR2A = power_r;
-    OCR1B = 0;//power_r; 
+    OCR1B = 0;
 
 
-//
+
     diff_l = ticks_l - leftReverseTicks_prev;
     diff_r = ticks_r - rightReverseTicks_prev;
-//
+
     leftReverseTicks_prev = ticks_l;
     rightReverseTicks_prev = ticks_r;
 
@@ -877,10 +852,6 @@ void left(float ang, float speed)
   // We will also replace this code with bare-metal later.
   // To turn left we reverse the left wheel and move
   // the right wheel forward.
-//  analogWrite(LR, val * MOTOR_L);
-//  analogWrite(RF, val * MOTOR_R);
-//  analogWrite(LF, 0);
-//  analogWrite(RR, 0);
 
     OCR0A = 0;
     OCR0B = val;
@@ -912,10 +883,7 @@ void right(float ang, float speed)
   // We will also replace this code with bare-metal later.
   // To turn right we reverse the right wheel and move
   // the left wheel forward.
-//  analogWrite(RR, val * MOTOR_R);
-//  analogWrite(LF, val * MOTOR_L);
-//  analogWrite(LR, 0);
-//  analogWrite(RF, 0);
+
     OCR0A = val;
     OCR0B = 0;
     OCR2A = val;
@@ -1126,28 +1094,12 @@ void setup() {
 }
 
 void setupColourModule(){
-//  pinMode(S0, OUTPUT);
-//  pinMode(S1, OUTPUT);
-//  pinMode(S2, OUTPUT);
-//  pinMode(S3, OUTPUT);
-//  pinMode(sensorOut, INPUT);
+
 
   DDRC |= 0b00111100;
   DDRC &= 0b11111110;
 
-//    DDRC |= _BV (5);
-//    DDRC |= _BV (4);
-//    DDRC |= _BV (2);
-//    DDRC |= _BV (3);
-//    DDRC &= ~_BV (0);
-    
-    
-    
-
-//  digitalWrite(S0,HIGH);
-//  digitalWrite(S1,LOW);
-
-  PORTC |= 0b00100000;//_BV (5);
+  PORTC |= 0b00100000;
   PORTC &= 0b11101111;
 }
 
